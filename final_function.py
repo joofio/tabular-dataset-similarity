@@ -8,6 +8,7 @@ from sklearn.metrics import (
     cohen_kappa_score,
 )
 import rbo
+from sklearn.inspection import permutation_importance
 
 import shap
 import itertools
@@ -111,7 +112,13 @@ def check_variance(dict_):
 
 
 def get_several_feat_imp_dataset_2(
-    data, categorical_cols, int_cols, rep=5, seed=42, test_size=0.05
+    data,
+    categorical_cols,
+    int_cols,
+    rep=5,
+    seed=42,
+    test_size=0.05,
+    models=[DecisionTreeClassifier, LinearRegression],
 ):
     """
 
@@ -137,12 +144,18 @@ def get_several_feat_imp_dataset_2(
         for r in range(0, rep):
             #     print("rep",r)
             n = random.randint(0, 100)
-
-            model = (
-                DecisionTreeClassifier(random_state=np.random.randint(1, 20))
-                if r_cols[i] in categorical_cols
-                else DecisionTreeRegressor(random_state=np.random.randint(1, 20))
-            )
+            if hasattr(models[0], "random_state"):
+                model = (
+                    models[0](random_state=np.random.randint(1, 20))
+                    if r_cols[i] in categorical_cols
+                    else models[1](random_state=np.random.randint(1, 20))
+                )
+            else:
+                model = (
+                    models[0]()
+                    if r_cols[i] in categorical_cols
+                    else models[1]()
+                )
             # metric = (
             #    "roc_auc_score"
             #    if r_cols[i] in categorical_cols
@@ -165,6 +178,14 @@ def get_several_feat_imp_dataset_2(
                     # print(g)
                     l_feats[g[0]].append(g[1])
             #        print(l_feats)
+            else:
+                r = permutation_importance(
+                    t, X_train, y_train, n_repeats=30, random_state=n
+                )
+
+                for g in zip(X_train.columns, r.importances_mean):
+                    l_feats[g[0]].append(g[1])
+
             result[r_cols[i]] = l_feats
     return result
 
@@ -189,7 +210,9 @@ def create_scores_v2(result1, result2):
         m2 = {k: np.mean(v) for k, v in result2[target].items()}
         # print(m1)
         # print(m2)
-        x1_rank = st.rankdata([-1 * el for el in m1.values()])
+        x1_rank = st.rankdata(
+            [-1 * el for el in m1.values()], method="ordinal"
+        )  # avoid tie
         x1_rank_dict = {k: v for k, v in zip(m1.keys(), x1_rank)}
         # print(x1_rank_dict)
 
@@ -197,7 +220,8 @@ def create_scores_v2(result1, result2):
             [
                 -1 * el if el != 0 else el * np.random.randint(1, 10) * 0.00001 * -1
                 for el in m2.values()
-            ]
+            ],
+            method="ordinal",  # avoid tie
         )  # avoid being zero
         x2_rank_dict = {k: v for k, v in zip(m2.keys(), x2_rank)}
         #    print(x2_rank)
@@ -324,12 +348,18 @@ def plot_plotly(
 
 
 def trial_permutatin(
-    data, categorical_values, continuous_values, cv, reps=20, nr_cols_to_test=7
+    data,
+    categorical_values,
+    continuous_values,
+    cv,
+    reps=20,
+    nr_cols_to_test=7,
+    models=[DecisionTreeClassifier, LinearRegression],
 ):
 
     plot_data = {}
     local_plot_data = {}
-    for i in range(0, nr_cols_to_test):  # nr of columns
+    for i in range(0, nr_cols_to_test + 1):  # nr of columns
         plot_data["run " + str(i)] = {"cross": []}
         print("run nr {}".format(i), "++" * 40)
         local_plot_data = {"cross": []}
@@ -354,10 +384,20 @@ def trial_permutatin(
             seed = np.random.randint(1, 20)
 
             result_1 = get_several_feat_imp_dataset_2(
-                data, categorical_values, continuous_values, reps, seed=seed
+                data,
+                categorical_values,
+                continuous_values,
+                reps,
+                seed=seed,
+                models=models,
             )
             result_2 = get_several_feat_imp_dataset_2(
-                data_1, categorical_values, continuous_values, reps, seed=seed
+                data_1,
+                categorical_values,
+                continuous_values,
+                reps,
+                seed=seed,
+                models=models,
             )
             sc = create_scores_v2(result_1, result_2)
             # print(sc["aggregated"])
