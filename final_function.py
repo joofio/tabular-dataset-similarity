@@ -144,18 +144,17 @@ def get_several_feat_imp_dataset_2(
         for r in range(0, rep):
             #     print("rep",r)
             n = random.randint(0, 100)
-            if hasattr(models[0], "random_state"):
-                model = (
-                    models[0](random_state=np.random.randint(1, 20))
-                    if r_cols[i] in categorical_cols
-                    else models[1](random_state=np.random.randint(1, 20))
-                )
+            if r_cols[i] in categorical_cols:
+                if hasattr(models[0], "random_state"):
+                    model = models[0].set_params(random_state=np.random.randint(1, 20))
+                else:
+                    model = models[0]
             else:
-                model = (
-                    models[0]()
-                    if r_cols[i] in categorical_cols
-                    else models[1]()
-                )
+                if hasattr(models[1], "random_state"):
+                    model = models[1].set_params(random_state=np.random.randint(1, 20))
+
+                else:
+                    model = models[1]
             # metric = (
             #    "roc_auc_score"
             #    if r_cols[i] in categorical_cols
