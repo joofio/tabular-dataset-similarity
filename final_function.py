@@ -118,7 +118,7 @@ def get_several_feat_imp_dataset_2(
     rep=5,
     seed=42,
     test_size=0.05,
-    models=[DecisionTreeClassifier, LinearRegression],
+    models=[DecisionTreeClassifier(), DecisionTreeRegressor()],
 ):
     """
 
@@ -145,12 +145,12 @@ def get_several_feat_imp_dataset_2(
             #     print("rep",r)
             n = random.randint(0, 100)
             if r_cols[i] in categorical_cols:
-                if hasattr(models[0], "random_state"):
+                if "random_state" in models[0].get_params():
                     model = models[0].set_params(random_state=np.random.randint(1, 20))
                 else:
                     model = models[0]
             else:
-                if hasattr(models[1], "random_state"):
+                if "random_state" in models[1].get_params():
                     model = models[1].set_params(random_state=np.random.randint(1, 20))
 
                 else:
@@ -179,7 +179,7 @@ def get_several_feat_imp_dataset_2(
             #        print(l_feats)
             else:
                 r = permutation_importance(
-                    t, X_train, y_train, n_repeats=30, random_state=n
+                    t, X_train, y_train, n_repeats=15, random_state=n, n_jobs=-2
                 )
 
                 for g in zip(X_train.columns, r.importances_mean):
