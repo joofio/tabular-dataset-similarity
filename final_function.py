@@ -7,10 +7,12 @@ from sklearn.metrics import (
     ndcg_score,
     cohen_kappa_score,
 )
+from sklearn.base import clone
+
 import rbo
 from sklearn.inspection import permutation_importance
 
-import shap
+# import shap
 import itertools
 import scipy.stats as st
 import random
@@ -25,6 +27,7 @@ import plotly.express as px
 from sklearn import preprocessing
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import accuracy_score
+
 
 # for comparasion
 def get_several_dif_dataset(
@@ -78,7 +81,6 @@ def get_several_dif_dataset(
 def aggregate_data_cross(
     real_data, synth_data, categorical_values, continuous_values, cv
 ):
-
     """
     ???
     """
@@ -144,17 +146,19 @@ def get_several_feat_imp_dataset_2(
         for r in range(0, rep):
             #     print("rep",r)
             n = random.randint(0, 100)
+           # print(models[0])
+           # print(models[1])
             if r_cols[i] in categorical_cols:
-                if "random_state" in models[0].get_params():
-                    model = models[0].set_params(random_state=np.random.randint(1, 20))
-                else:
-                    model = models[0]
-            else:
-                if "random_state" in models[1].get_params():
-                    model = models[1].set_params(random_state=np.random.randint(1, 20))
+                model = clone(models[0])
 
-                else:
-                    model = models[1]
+                if "random_state" in model.get_params():
+                    model = model.set_params(random_state=np.random.randint(1, 20))
+
+            else:
+                model = clone(models[1])
+
+                if "random_state" in model.get_params():
+                    model = model.set_params(random_state=np.random.randint(1, 20))
             # metric = (
             #    "roc_auc_score"
             #    if r_cols[i] in categorical_cols
@@ -247,6 +251,7 @@ def create_scores_v2(result1, result2):
 
         #  l_=ndcg_score([true_score_rank],[model_score])
         n_l = ndcg_score([true_score_rank], [model_score_rank])
+
         #
         def mae_over_max(mae, max_):
             if max_ == 0:
@@ -307,7 +312,6 @@ def create_scores_v2(result1, result2):
 def test_two_datasets(
     data, data_1, categorical_values, continuous_values, reps=10, seed=42
 ):
-
     result_1 = get_several_feat_imp_dataset_2(
         data, categorical_values, continuous_values, reps, seed=seed
     )
@@ -353,9 +357,8 @@ def trial_permutatin(
     cv,
     reps=20,
     nr_cols_to_test=7,
-    models=[DecisionTreeClassifier, LinearRegression],
+    models=[DecisionTreeClassifier(), LinearRegression()],
 ):
-
     plot_data = {}
     local_plot_data = {}
     for i in range(0, nr_cols_to_test + 1):  # nr of columns
@@ -364,7 +367,6 @@ def trial_permutatin(
         local_plot_data = {"cross": []}
 
         for j in range(0, reps):  # nr of repetitions
-
             print("reps", str(j + 1))
             random.seed(j)
             data_1 = data.copy()
@@ -432,7 +434,6 @@ def trial_permutatin(
 
 
 def overall_ratio_new(data, categorical_values, continuous_values, rep, method="shap"):
-
     """
     nao faz sentido combinação de relações ???
     """
@@ -461,7 +462,6 @@ def overall_ratio_new(data, categorical_values, continuous_values, rep, method="
         else:
             scores_[s] = [({k: v[s] for k, v in sc.items()})]
     for k, v in scores_.items():
-
         res_df = pd.DataFrame(scores_[k])
         # res_df.loc['mean_column'] = res_df.mean()
         res_df["mean_row"] = res_df.mean(numeric_only=True, axis=1)
@@ -501,7 +501,6 @@ def overall_ratio(data, categorical_values, continuous_values, cv, rep, method="
                 else:
                     scores_[s] = [({k: v[s] for k, v in sc.items()})]
     for k, v in scores_.items():
-
         res_df = pd.DataFrame(scores_[k], index=indexes_comb)
         res_df.loc["mean_column"] = res_df.mean()
         res_df["mean_row"] = res_df.mean(numeric_only=True, axis=1)
@@ -567,7 +566,6 @@ def get_several_feat_imp_dataset_shap(
             # print(cols)
             # print(means,cols)
             for g in zip(cols, means):
-
                 l_feats[g[0]].append(g[1])
             # print(l_feats)
             result[r_cols[i]] = l_feats
