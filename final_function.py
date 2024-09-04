@@ -31,8 +31,8 @@ from sklearn.metrics import accuracy_score
 
 # for comparasion
 def get_several_dif_dataset(
-    data1,
-    data2,
+    data1_,
+    data2_,
     categorical_cols,
     int_cols,
     cv,
@@ -42,12 +42,14 @@ def get_several_dif_dataset(
     This is the gold standard as of now. It is a function that takes in two datasets and
     returns the scores for each of the metrics.
     """
-
+    data1 = data1_.copy()
+    data2 = data2_.copy()
     le = preprocessing.OrdinalEncoder()
-    le.fit(data1[categorical_cols].astype(str))
-    data1[categorical_cols] = le.transform(data1[categorical_cols].astype(str))
+    le.fit(data1_[categorical_cols].astype(str))
+    data1[categorical_cols] = le.transform(data1_[categorical_cols].astype(str))
     # le = preprocessing.OrdinalEncoder()
     # le.fit(data2[categorical_cols].astype(str))
+
     data2[categorical_cols] = le.transform(data2[categorical_cols].astype(str))
 
     r_cols = data1.columns
@@ -146,8 +148,8 @@ def get_several_feat_imp_dataset_2(
         for r in range(0, rep):
             #     print("rep",r)
             n = random.randint(0, 100)
-           # print(models[0])
-           # print(models[1])
+            # print(models[0])
+            # print(models[1])
             if r_cols[i] in categorical_cols:
                 model = clone(models[0])
 
@@ -271,9 +273,9 @@ def create_scores_v2(result1, result2):
         sc["weightedtau"] = st.weightedtau(true_score_rank, model_score_rank)[0]
         sc["rbo"] = rbo.RankingSimilarity(true_score_rank, model_score_rank).rbo()
 
-        sc[
-            "damerau_levenshtein_normalized_similarity"
-        ] = damerau_levenshtein.normalized_similarity(true_score_rank, model_score_rank)
+        sc["damerau_levenshtein_normalized_similarity"] = (
+            damerau_levenshtein.normalized_similarity(true_score_rank, model_score_rank)
+        )
         sc["jaro_winkler_normalized_similarity"] = jaro_winkler.normalized_similarity(
             true_score_rank, model_score_rank
         )
