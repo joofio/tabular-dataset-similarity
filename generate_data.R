@@ -117,3 +117,23 @@ table(df5[,c("exocytosis", "parakeratosis")])
 
 write.csv(synth.obj5$syn,"/Users/joaoalmeida/OneDrive/HEADS/05. TESE/8.0 dataset similarity/tabular-dataset-similarity/synth_pop_5.csv")
 
+
+### 6
+
+df6<-read.csv("/Users/joaoalmeida/OneDrive/HEADS/05. TESE/8.0 dataset similarity/tabular-dataset-similarity/real_data6_testing.csv")
+df6$X<-NULL
+
+df6
+df6[sapply(df6, is.character)] <- lapply(df6[sapply(df6, is.character)], factor)
+
+
+
+synth.obj6 <- syn(df6, seed = myseed,k = 1000)
+
+synth.obj6$syn
+
+
+compare(synth.obj6, df6, nrow = 3, ncol = 4)
+
+write.csv(synth.obj6$syn,"/Users/joaoalmeida/OneDrive/HEADS/05. TESE/8.0 dataset similarity/tabular-dataset-similarity/synth_pop_6_2.csv")
+
