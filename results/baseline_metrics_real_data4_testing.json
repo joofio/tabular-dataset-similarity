@@ -1,0 +1,32 @@
+[
+  {
+    "propensity_auroc": 0.8328826392644673,
+    "propensity_brier": 0.17470885057533006,
+    "perturbation": "mean_variance_drift",
+    "dataset": "real_data4_testing"
+  },
+  {
+    "propensity_auroc": 0.3839913466738778,
+    "propensity_brier": 0.2546925273696143,
+    "perturbation": "noise_injection",
+    "dataset": "real_data4_testing"
+  },
+  {
+    "propensity_auroc": 0.38804759329367233,
+    "propensity_brier": 0.2545963597227113,
+    "perturbation": "category_collapse",
+    "dataset": "real_data4_testing"
+  },
+  {
+    "propensity_auroc": 0.3472147106544078,
+    "propensity_brier": 0.25522906644602683,
+    "perturbation": "correlation_mix",
+    "dataset": "real_data4_testing"
+  },
+  {
+    "propensity_auroc": 0.4237425635478637,
+    "propensity_brier": 0.3175134414329087,
+    "perturbation": "missingness_mcar",
+    "dataset": "real_data4_testing"
+  }
+]

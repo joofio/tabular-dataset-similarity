@@ -1,0 +1,26 @@
+# Core scientific computing
+numpy>=1.24.0,<2.0.0
+pandas>=2.0.0,<3.0.0
+scipy>=1.10.0,<2.0.0
+
+# Machine learning
+scikit-learn>=1.3.0,<2.0.0
+
+# Statistical models (for mixed-effects analysis)
+statsmodels>=0.14.0,<1.0.0
+
+# Ranking similarity metrics
+rbo>=0.1.0
+
+# String/sequence similarity metrics (optional but recommended)
+python-Levenshtein>=0.21.0
+jellyfish>=1.0.0
+textdistance>=4.5.0
+
+# Visualization (optional, for notebooks)
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Jupyter notebook support (optional)
+jupyter>=1.0.0
+ipykernel>=6.0.0

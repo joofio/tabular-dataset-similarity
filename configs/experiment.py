@@ -1,0 +1,106 @@
+"""Central experiment configuration in Python form."""
+
+EXPERIMENT = {
+    "random_seed": 42,
+    "test_size": 0.2,
+    "repeats": 5,
+    "models": {
+        "classification": ["DecisionTreeClassifier", "RandomForestClassifier"],
+        "regression": ["LinearRegression", "RandomForestRegressor"],
+    },
+    "datasets": [
+        {
+            "name": "real_data_testing",
+            "path": "data/real_data_testing.csv",
+            "numeric_cols": ["Age", "trestbps", "chol", "thalach", "oldpeak"],
+            "categorical_cols": ["sex", "cp", "fbs", "restecg", "exang", "slope", "ca", "thal", "num"],
+            "target_cols": [
+                "Age", "trestbps", "chol", "thalach", "oldpeak",
+                "sex", "cp", "fbs", "restecg", "exang", "slope", "ca", "thal", "num",
+            ],
+        },
+        {
+            "name": "real_data2_testing",
+            "path": "data/real_data2_testing.csv",
+            "numeric_cols": [
+                "Clump_Thickness",
+                "Uniformity_of_Cell_Size",
+                "Uniformity_of_Cell_Shape",
+                "Marginal_Adhesion",
+                "Single_Epithelial_Cell_Size",
+                "Bare_Nuclei",
+                "Bland_Chromatin",
+                "Normal_Nucleoli",
+                "Mitoses",
+            ],
+            "categorical_cols": ["Class"],
+            "target_cols": [
+                "Clump_Thickness", "Uniformity_of_Cell_Size", "Uniformity_of_Cell_Shape",
+                "Marginal_Adhesion", "Single_Epithelial_Cell_Size", "Bare_Nuclei",
+                "Bland_Chromatin", "Normal_Nucleoli", "Mitoses", "Class",
+            ],
+        },
+        {
+            "name": "real_data3_testing",
+            "path": "data/real_data3_testing.csv",
+            "numeric_cols": ["mcv", "alkphos", "sgpt", "sgot", "gammagt", "drinks"],
+            "categorical_cols": ["Selector"],
+            "target_cols": ["mcv", "alkphos", "sgpt", "sgot", "gammagt", "drinks", "Selector"],
+        },
+        {
+            "name": "real_data4_testing",
+            "path": "data/real_data4_testing.csv",
+            "numeric_cols": ["T3", "TST", "TSTRI", "TSH", "TMAX"],
+            "categorical_cols": ["Class"],
+            "target_cols": ["T3", "TST", "TSTRI", "TSH", "TMAX", "Class"],
+        },
+        {
+            "name": "real_data5_testing",
+            "path": "data/real_data5_testing.csv",
+            "numeric_cols": ["Age_linear"],
+            "categorical_cols": [
+                "erythema", "scaling", "definite_borders", "itching", "koebner_phenomenon",
+                "polygonal_papules", "follicular_papules", "oral_mucosal_involvement",
+                "knee_and_elbow_involvement", "scalp_involvement", "family_history",
+                "melanin_incontinence", "eosinophils_in_the_infiltrate", "PNL_infiltrate",
+                "fibrosis_of_the_papillary_dermis", "exocytosis", "acanthosis", "hyperkeratosis",
+                "parakeratosis", "clubbing_of_the_rete_ridges", "elongation_of_the_rete_ridges",
+                "thinning_of_the_suprapapillary_epidermis", "spongiform_pustule", "munro_microabcess",
+                "focal_hypergranulosis", "disappearance_of_the_granular_layer",
+                "vacuolisation_and_damage_of_basal_layer", "spongiosis", "saw-tooth_appearance_of_retes",
+                "follicular_horn_plug", "perifollicular_parakeratosis", "inflammatory_monoluclear_inflitrate",
+                "band-like_infiltrate", "class",
+            ],
+            "target_cols": [
+                "Age_linear", "erythema", "scaling", "definite_borders", "itching", "koebner_phenomenon",
+                "polygonal_papules", "follicular_papules", "oral_mucosal_involvement",
+                "knee_and_elbow_involvement", "scalp_involvement", "family_history",
+                "melanin_incontinence", "eosinophils_in_the_infiltrate", "PNL_infiltrate",
+                "fibrosis_of_the_papillary_dermis", "exocytosis", "acanthosis", "hyperkeratosis",
+                "parakeratosis", "clubbing_of_the_rete_ridges", "elongation_of_the_rete_ridges",
+                "thinning_of_the_suprapapillary_epidermis", "spongiform_pustule", "munro_microabcess",
+                "focal_hypergranulosis", "disappearance_of_the_granular_layer",
+                "vacuolisation_and_damage_of_basal_layer", "spongiosis", "saw-tooth_appearance_of_retes",
+                "follicular_horn_plug", "perifollicular_parakeratosis", "inflammatory_monoluclear_inflitrate",
+                "band-like_infiltrate", "class",
+            ],
+        },
+        {
+            "name": "real_data6_testing",
+            "path": "data/real_data6_testing.csv",
+            "numeric_cols": [],  # all categorical
+            "categorical_cols": [
+                "class", "age", "sex", "histologic-type", "degree-of-diffe",
+                "bone", "bone-marrow", "lung", "pleura", "peritoneum",
+                "liver", "brain", "skin", "neck", "supraclavicular",
+                "axillar", "mediastinum", "abdominal",
+            ],
+            "target_cols": [
+                "class", "age", "sex", "histologic-type", "degree-of-diffe",
+                "bone", "bone-marrow", "lung", "pleura", "peritoneum",
+                "liver", "brain", "skin", "neck", "supraclavicular",
+                "axillar", "mediastinum", "abdominal",
+            ],
+        },
+    ],
+}

@@ -1,0 +1,13 @@
+{
+  "random_seed": 42,
+  "test_size": 0.2,
+  "repeats": 5,
+  "perturbations": [
+    "mean_variance_drift",
+    "noise_injection",
+    "category_collapse",
+    "correlation_mix",
+    "missingness_mcar"
+  ],
+  "dataset": "real_data3_testing"
+}
