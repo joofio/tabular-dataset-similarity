@@ -42,7 +42,7 @@ def compute_ranking_scores(feat_importance_real: Dict[str, float], feat_importan
     ftkeys = list(feat_importance_real.keys())
 
     # Rank features (negative to get descending order - higher importance = lower rank number)
-    # Use average method for ties, then break remaining ties deterministically by feature name
+    # Use deterministic tie-breaks by feature name.
     real_items = sorted(feat_importance_real.items(), key=lambda x: (-x[1], x[0]))
     x1_rank_dict = {}
     for rank, (name, _) in enumerate(real_items, start=1):
@@ -53,6 +53,9 @@ def compute_ranking_scores(feat_importance_real: Dict[str, float], feat_importan
     x2_rank_dict = {}
     for rank, (name, _) in enumerate(synth_items, start=1):
         x2_rank_dict[name] = rank
+
+    real_ranked = [name for name, _ in real_items]
+    synth_ranked = [name for name, _ in synth_items]
 
     true_score = []
     model_score = []
@@ -113,6 +116,20 @@ def compute_ranking_scores(feat_importance_real: Dict[str, float], feat_importan
             sc["rbo"] = float(rbo.RankingSimilarity(true_score_rank, model_score_rank).rbo())
         except Exception:
             sc["rbo"] = None
+
+    # Top-k overlap (Jaccard) on ranked feature names
+    def _jaccard_top_k(rank_a, rank_b, k):
+        k = min(k, len(rank_a), len(rank_b))
+        if k <= 0:
+            return None
+        set_a = set(rank_a[:k])
+        set_b = set(rank_b[:k])
+        if not set_a and not set_b:
+            return 1.0
+        return len(set_a & set_b) / len(set_a | set_b)
+
+    sc["jaccard_top_5"] = _jaccard_top_k(real_ranked, synth_ranked, 5)
+    sc["jaccard_top_10"] = _jaccard_top_k(real_ranked, synth_ranked, 10)
 
     # String similarity metrics on ranks
     if HAS_LEVENSHTEIN:

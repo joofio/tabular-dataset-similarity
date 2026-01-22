@@ -5,7 +5,7 @@
   "perturbations": [
     "mean_variance_drift",
     "noise_injection",
-    "category_collapse",
+    "category_flip",
     "correlation_mix",
     "missingness_mcar"
   ],

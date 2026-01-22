@@ -462,6 +462,10 @@ def _apply_perturbation(df, spec, cat_cols, num_cols):
         if not cat_cols:
             return df.copy()
         return perturbations.apply_category_collapse(df, cat_cols, **params)
+    if name == "category_flip":
+        if not cat_cols:
+            return df.copy()
+        return perturbations.apply_category_flip(df, cat_cols, **params)
 
     # Mixed perturbations
     if name == "missingness_mcar":

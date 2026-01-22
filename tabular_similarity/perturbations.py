@@ -14,10 +14,15 @@ def apply_mean_variance_drift(
     mean_shift: float = 0.0,
     scale: float = 1.0,
 ) -> pd.DataFrame:
-    """Shift and scale numeric columns."""
+    """Shift and scale numeric columns.
+
+    mean_shift is interpreted in units of each column's standard deviation.
+    """
 
     out = df.copy()
-    out[numeric_cols] = out[numeric_cols] * scale + mean_shift
+    col_stds = out[numeric_cols].std(ddof=0).fillna(0)
+    shift = mean_shift * col_stds
+    out[numeric_cols] = out[numeric_cols] * scale + shift
     return out
 
 
@@ -27,11 +32,16 @@ def apply_noise_injection(
     std: float = 0.1,
     random_state: int | None = None,
 ) -> pd.DataFrame:
-    """Add Gaussian noise to numeric columns."""
+    """Add Gaussian noise to numeric columns.
+
+    std is interpreted as a fraction of each column's standard deviation.
+    """
 
     rng = np.random.default_rng(random_state)
     out = df.copy()
-    noise = rng.normal(0.0, std, size=out[numeric_cols].shape)
+    col_stds = out[numeric_cols].std(ddof=0).fillna(0).to_numpy()
+    scale = (std * col_stds).reshape(1, -1)
+    noise = rng.normal(0.0, 1.0, size=out[numeric_cols].shape) * scale
     out[numeric_cols] = out[numeric_cols] + noise
     return out
 
@@ -49,6 +59,41 @@ def apply_category_collapse(
         freq = out[col].value_counts(normalize=True)
         rare = freq[freq < min_freq].index
         out[col] = out[col].where(~out[col].isin(rare), other_label)
+    return out
+
+
+def apply_category_flip(
+    df: pd.DataFrame,
+    categorical_cols: Sequence[str],
+    flip_prob: float = 0.1,
+    random_state: int | None = None,
+) -> pd.DataFrame:
+    """Randomly flip categories according to empirical frequencies."""
+
+    rng = np.random.default_rng(random_state)
+    out = df.copy()
+    for col in categorical_cols:
+        series = out[col]
+        freq = series.value_counts(normalize=True, dropna=True)
+        if freq.size <= 1:
+            continue
+
+        categories = freq.index.to_numpy()
+        probs = freq.to_numpy()
+        flip_mask = (rng.uniform(size=len(series)) < flip_prob) & series.notna()
+
+        for cat in categories:
+            cat_mask = flip_mask & series.eq(cat)
+            if not cat_mask.any():
+                continue
+            other_mask = categories != cat
+            other_categories = categories[other_mask]
+            other_probs = probs[other_mask]
+            other_probs = other_probs / other_probs.sum()
+            out.loc[cat_mask, col] = rng.choice(
+                other_categories, size=cat_mask.sum(), p=other_probs
+            )
+
     return out
 
 
